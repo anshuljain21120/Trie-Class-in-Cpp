@@ -63,7 +63,6 @@ public:
     }
 
     ~Trie(){
-
         this->umap.clear();
     }
 };
