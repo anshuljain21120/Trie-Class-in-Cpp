@@ -1,68 +1,74 @@
 #include<unordered_map>
 #include<string>
 
-class Trie{
-
-private:
-    bool isLeaf;
-    std::unordered_map<char, Trie* > umap;
-
+class TrieNode {
 public:
-    Trie(bool isLeaf=false){
-        // Constructor
-
+    bool isLeaf;
+    unordered_map<char, TrieNode*> umap;
+    TrieNode(bool isLeaf=false) {
         this->isLeaf=isLeaf;
         this->umap.clear();
     }
+    
+    ~TrieNode() {
+        umap.clear();
+    }
+};
 
-    void insert(std::string s){
-        // inserts string starting from this Node
-
-        if(s.empty())
-            return;
+class Trie {
+private:
+    TrieNode* root;
+public:
+    Trie(bool isLeaf=false) {
+        root = new TrieNode(isLeaf);
+    }
+    
+    void insert(string s) {
+        if(s.empty()) return;
         
-        Trie *ptr=this;
-        for(unsigned long long int i=0; i<s.size(); i++)
+        TrieNode *ptr=root;
+        for(int i=0; i<s.size(); i++)
         {
             char c=s.at(i);
             bool cExists=(ptr->umap.find(c)!=ptr->umap.end());
             
-            if(!cExists)
-                ptr->umap[c] = new Trie();
-
+            if(!cExists) ptr->umap[c] = new TrieNode();
             ptr = ptr->umap[c];
         }
-        ptr->isLeaf=true;
+        ptr->isLeaf = true;
     }
-
-    bool hasString(std::string s){
-        // True if Trie Node has string s
-
-        Trie *ptr=this;
-        for(unsigned long long int i=0; i<s.size(); i++)
+    
+    bool search(string s) {
+        TrieNode *ptr = root;
+        for(int i=0; i<s.size(); i++)
         {
             char c=s.at(i);
             bool cExists=(ptr->umap.find(c)!=ptr->umap.end());
             
-            if(!cExists)
-                return false;
-
+            if(!cExists) return false;
             ptr = ptr->umap[c];
         }
         return ptr->isLeaf;
     }
-
-    bool hasChildren(){
-        // True if Trie Node has children
-
-        for (auto it : this->umap){
-            if (it.second != NULL)
-                return true;
+    
+    bool startsWith(string s) {
+        TrieNode *ptr=root;
+        for(int i=0; i<s.size(); i++)
+        {
+            char c=s.at(i);
+            bool cExists=(ptr->umap.find(c)!=ptr->umap.end());
+            
+            if(!cExists) return false;
+            ptr = ptr->umap[c];
         }
-        return false;
-    }
-
-    ~Trie(){
-        this->umap.clear();
+        return true;
     }
 };
+
+/**
+ * Your Trie object will be instantiated and called as such:
+ * Trie* obj = new Trie();
+ * obj->insert(word);
+ * bool param_2 = obj->search(word);
+ * bool param_3 = obj->startsWith(prefix);
+ */
